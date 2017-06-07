@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 扫描指定包下的生产者提供的服务并注入到Spring容器中 -->
+	<context:component-scan base-package="org.rpc.provider.service.impl" />
+
+	<!-- <context:annotation-config /> -->
+
+	<!-- 使用指定配置启动容器并注册服务,使用构造函数public ProviderProxyFactory(Map<Class<?>, Object> 
+		providerHashMaps, ProviderConfig providerConfig) -->
+	<bean class="org.rpc.core.proxy.ProviderProxyFactory">
+		<!-- 注册服务，这里我们注入了calculateService服务，可注册多个服务，在这里增加即可 -->
+		<constructor-arg name="providerHashMaps">
+			<map key-type="java.lang.Class" value-type="java.lang.Object">
+				<entry key="org.rpc.interfaces.service.CalculateService"
+					value-ref="calculateService" />
+			</map>
+		</constructor-arg>
+
+		<!-- 使用指定生产者配置来启动容器，指定生产者监听指定端口，默认是8080 -->
+		<constructor-arg name="providerConfig">
+			<bean id="providerConfig" class="org.rpc.core.config.ProviderConfig">
+				<property name="port" value="8888" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+</beans>
